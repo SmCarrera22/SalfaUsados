@@ -1,4 +1,4 @@
-package cl.salfa.ms_vehicles;
+package cl.salfa.vehicles;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
