@@ -37,3 +37,12 @@ out/
 # ============================================
 *.log
 logs/
+
+# Node
+node_modules/
+dist/
+
+# Environment variables
+.env
+.env.*
+!.env.example
