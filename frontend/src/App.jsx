@@ -1,362 +1,175 @@
-import { useState } from 'react';
-import { useMsal } from '@azure/msal-react';
 import {
-    InteractionRequiredAuthError,
-} from '@azure/msal-browser';
+    Navigate,
+    Route,
+    Routes,
+} from 'react-router-dom';
 
-import { loginRequest } from './config/msal';
+import ProtectedRoute
+    from './auth/ProtectedRoute';
 
-function App() {
-    const { instance, accounts } = useMsal();
-    const account = accounts[0];
+import AppLayout
+    from './components/layout/AppLayout';
 
-    const [vehicles, setVehicles] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [message, setMessage] = useState('');
-    const [testVehicleId, setTestVehicleId] = useState('');
+import DashboardPage
+    from './pages/DashboardPage';
 
-    async function handleLogin() {
-        await instance.loginRedirect(loginRequest);
-    }
+import LoginPage
+    from './pages/LoginPage';
 
-    async function handleLogout() {
-        await instance.logoutRedirect({
-            account,
-        });
-    }
+import NotFoundPage
+    from './pages/NotFoundPage';
 
-    async function getAccessToken() {
-        if (!account) {
-            throw new Error('No existe una sesión activa.');
-        }
+import UnauthorizedPage
+    from './pages/UnauthorizedPage';
 
-        try {
-            const tokenResponse = await instance.acquireTokenSilent({
-                ...loginRequest,
-                account,
-            });
+import UsersPage
+    from './pages/UsersPage';
 
-            return tokenResponse.accessToken;
-        } catch (error) {
-            if (error instanceof InteractionRequiredAuthError) {
-                await instance.acquireTokenRedirect({
-                    ...loginRequest,
-                    account,
-                });
+import VehiclesPage
+    from './pages/VehiclesPage';
 
-                return null;
-            }
+import VehicleFormPage
+    from './pages/VehicleFormPage';
 
-            throw error;
-        }
-    }
+import UserFormPage
+    from './pages/UserFormPage';
 
-    async function handleLoadVehicles() {
-        try {
-            setMessage('');
+import {
+    useAuth,
+} from './auth/AuthContext';
 
-            const accessToken = await getAccessToken();
+function LoginRoute() {
+    const {
+        isAuthenticated,
+    } = useAuth();
 
-            if (!accessToken) {
-                return;
-            }
-
-            const response = await fetch(
-                'http://localhost:8080/api/vehicles',
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                },
-            );
-
-            console.log(
-                'GET vehicles status:',
-                response.status,
-            );
-
-            if (!response.ok) {
-                setVehicles([]);
-
-                setMessage(
-                    `GET /api/vehicles → HTTP ${response.status}`,
-                );
-
-                return;
-            }
-
-            const data = await response.json();
-
-            setVehicles(data);
-
-            setMessage(
-                `GET /api/vehicles → HTTP ${response.status}`,
-            );
-        } catch (error) {
-            console.error(error);
-
-            setMessage(
-                `Error: ${error.message}`,
-            );
-        }
-    }
-
-    async function handleLoadUsers() {
-        try {
-            setMessage('');
-
-            const accessToken = await getAccessToken();
-
-            if (!accessToken) {
-                return;
-            }
-
-            const response = await fetch(
-                'http://localhost:8080/api/users',
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                },
-            );
-
-            console.log(
-                'GET users status:',
-                response.status,
-            );
-
-            if (!response.ok) {
-                setUsers([]);
-
-                setMessage(
-                    `GET /api/users → HTTP ${response.status}`,
-                );
-
-                return;
-            }
-
-            const data = await response.json();
-
-            setUsers(data);
-
-            setMessage(
-                `GET /api/users → HTTP ${response.status}`,
-            );
-        } catch (error) {
-            console.error(error);
-
-            setMessage(
-                `Error: ${error.message}`,
-            );
-        }
-    }
-
-    async function handleCreateTestVehicle() {
-        try {
-            setMessage('');
-
-            const accessToken = await getAccessToken();
-
-            if (!accessToken) {
-                return;
-            }
-
-            const testVehicle = {
-                vin: 'TESTSALFA36000001',
-                plate: 'TEST02',
-                brand: 'Chevrolet',
-                model: 'Tracker',
-                version: 'Test RBAC',
-                year: 2025,
-                mileage: 10000,
-                color: 'Blanco',
-                fuelType: 'Gasolina',
-                branch: 'Movicenter',
-                status: 'AVAILABLE',
-            };
-
-            const response = await fetch(
-                'http://localhost:8080/api/vehicles',
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(testVehicle),
-                },
-            );
-
-            console.log(
-                'POST vehicle status:',
-                response.status,
-            );
-
-            if (!response.ok) {
-                setMessage(
-                    `POST /api/vehicles → HTTP ${response.status}`,
-                );
-
-                return;
-            }
-
-            const data = await response.json();
-
-            console.log(
-                'Vehículo de prueba creado:',
-                data,
-            );
-
-            setMessage(
-                `POST /api/vehicles → HTTP ${response.status}`,
-            );
-        } catch (error) {
-            console.error(error);
-
-            setMessage(
-                `Error: ${error.message}`,
-            );
-        }
-    }
-
-    async function handleDeleteTestVehicle() {
-        try {
-            setMessage('');
-
-            if (!testVehicleId) {
-                setMessage('Debes ingresar el ID del vehículo de prueba.');
-                return;
-            }
-
-            const accessToken = await getAccessToken();
-
-            if (!accessToken) {
-                return;
-            }
-
-            const response = await fetch(
-                `http://localhost:8080/api/vehicles/${testVehicleId}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                },
-            );
-
-            console.log(
-                'DELETE vehicle status:',
-                response.status,
-            );
-
-            setMessage(
-                `DELETE /api/vehicles/${testVehicleId} → HTTP ${response.status}`,
-            );
-
-            if (response.ok) {
-                setVehicles((currentVehicles) =>
-                    currentVehicles.filter(
-                        (vehicle) =>
-                            String(vehicle.id) !== String(testVehicleId),
-                    ),
-                );
-            }
-        } catch (error) {
-            console.error(error);
-
-            setMessage(
-                `Error: ${error.message}`,
-            );
-        }
-    }
-
-    if (!account) {
+    if (isAuthenticated) {
         return (
-            <main>
-                <h1>Salfa360</h1>
-
-                <p>
-                    Plataforma de gestión de vehículos usados
-                </p>
-
-                <button onClick={handleLogin}>
-                    Iniciar sesión con Microsoft
-                </button>
-            </main>
+            <Navigate
+                to="/dashboard"
+                replace
+            />
         );
     }
 
+    return <LoginPage />;
+}
+
+function App() {
     return (
-        <main>
-            <h1>Salfa360</h1>
+        <Routes>
+            <Route
+                path="/login"
+                element={<LoginRoute />}
+            />
 
-            <p>
-                Sesión iniciada correctamente.
-            </p>
+            <Route
+                path="/unauthorized"
+                element={<UnauthorizedPage />}
+            />
 
-            <p>
-                Usuario: {account.username}
-            </p>
+            <Route
+                element={
+                    <ProtectedRoute>
+                        <AppLayout />
+                    </ProtectedRoute>
+                }
+            >
+                <Route
+                    path="/dashboard"
+                    element={<DashboardPage />}
+                />
 
-            <div>
-                <button onClick={handleLoadVehicles}>
-                    Cargar vehículos desde BFF
-                </button>
+                <Route
+                    path="/vehicles"
+                    element={<VehiclesPage />}
+                />
 
-                <button onClick={handleLoadUsers}>
-                    Cargar usuarios desde BFF
-                </button>
-
-                <button onClick={handleCreateTestVehicle}>
-                    Crear vehículo de prueba
-                </button>
-
-                <button onClick={handleLogout}>
-                    Cerrar sesión
-                </button>
-            </div>
-
-            <div>
-                <input
-                    type="number"
-                    placeholder="ID vehículo de prueba"
-                    value={testVehicleId}
-                    onChange={(event) =>
-                        setTestVehicleId(event.target.value)
+                <Route
+                    path="/vehicles/new"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                'ADMIN',
+                                'OPERATOR',
+                            ]}
+                        >
+                            <VehicleFormPage />
+                        </ProtectedRoute>
                     }
                 />
 
-                <button onClick={handleDeleteTestVehicle}>
-                    Eliminar vehículo de prueba
-                </button>
-            </div>
+                <Route
+                    path="/vehicles/:id/edit"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                'ADMIN',
+                                'OPERATOR',
+                            ]}
+                        >
+                            <VehicleFormPage />
+                        </ProtectedRoute>
+                    }
+                />
 
-            {message && (
-                <p>
-                    <strong>{message}</strong>
-                </p>
-            )}
+                <Route
+                    path="/users"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                'ADMIN',
+                            ]}
+                        >
+                            <UsersPage />
+                        </ProtectedRoute>
+                    }
+                />
 
-            {vehicles.length > 0 && (
-                <>
-                    <h2>Vehículos</h2>
+                <Route
+                    path="/users/new"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                'ADMIN',
+                            ]}
+                        >
+                            <UserFormPage />
+                        </ProtectedRoute>
+                    }
+                />
 
-                    <pre>
-            {JSON.stringify(vehicles, null, 2)}
-          </pre>
-                </>
-            )}
+                <Route
+                    path="/users/:id/edit"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                'ADMIN',
+                            ]}
+                        >
+                            <UserFormPage />
+                        </ProtectedRoute>
+                    }
+                />
+            </Route>
 
-            {users.length > 0 && (
-                <>
-                    <h2>Usuarios</h2>
+            <Route
+                path="/"
+                element={
+                    <Navigate
+                        to="/dashboard"
+                        replace
+                    />
+                }
+            />
 
-                    <pre>
-            {JSON.stringify(users, null, 2)}
-          </pre>
-                </>
-            )}
-        </main>
+            <Route
+                path="*"
+                element={
+                    <NotFoundPage />
+                }
+            />
+        </Routes>
     );
 }
 

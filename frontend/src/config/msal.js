@@ -1,13 +1,17 @@
-import { PublicClientApplication } from '@azure/msal-browser';
+import {
+    PublicClientApplication,
+} from '@azure/msal-browser';
 
 export const msalConfig = {
     auth: {
-        clientId: import.meta.env.VITE_ENTRA_CLIENT_ID,
+        clientId:
+        import.meta.env.VITE_ENTRA_CLIENT_ID,
 
         authority:
             `https://login.microsoftonline.com/${import.meta.env.VITE_ENTRA_TENANT_ID}`,
 
-        redirectUri: import.meta.env.VITE_ENTRA_REDIRECT_URI,
+        redirectUri:
+        import.meta.env.VITE_ENTRA_REDIRECT_URI,
 
         postLogoutRedirectUri:
         import.meta.env.VITE_ENTRA_REDIRECT_URI,
@@ -25,4 +29,6 @@ export const loginRequest = {
 };
 
 export const msalInstance =
-    new PublicClientApplication(msalConfig);
+    new PublicClientApplication(
+        msalConfig,
+    );
