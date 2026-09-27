@@ -24,9 +24,19 @@ import {
 
 import './index.css';
 import './styles/app.css';
+import { vehicleApi, userApi } from './api/apiClient';
 
 async function bootstrap() {
     await msalInstance.initialize();
+
+    // Utilidades para pruebas de autorización EP1
+    window.salfa360Test = {
+        getVehicles: () => vehicleApi.getAll(),
+        getUsers: () => userApi.getAll(),
+        createVehicle: (vehicle) => vehicleApi.create(vehicle),
+        updateVehicle: (id, vehicle) => vehicleApi.update(id, vehicle),
+        deleteVehicle: (id) => vehicleApi.remove(id),
+    };
 
     createRoot(
         document.getElementById('root'),

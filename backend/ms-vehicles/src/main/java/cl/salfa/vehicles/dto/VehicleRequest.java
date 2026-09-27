@@ -14,7 +14,7 @@ public record VehicleRequest(
         String vin,
 
         @NotBlank(message = "La patente es obligatoria")
-        @Size(max = 10, message = "La patente no puede superar los 10 caracteres")
+        @Size(max = 6, message = "La patente no puede superar los 6 caracteres")
         String plate,
 
         @NotBlank(message = "La marca es obligatoria")
@@ -26,8 +26,8 @@ public record VehicleRequest(
         String version,
 
         @NotNull(message = "El año es obligatorio")
-        @Min(value = 1900, message = "El año del vehículo no es válido")
-        @Max(value = 2100, message = "El año del vehículo no es válido")
+        @Min(value = 1990, message = "El año del vehículo no es válido")
+        @Max(value = 2027, message = "El año del vehículo no es válido")
         Integer year,
 
         @Min(value = 0, message = "El kilometraje no puede ser negativo")
