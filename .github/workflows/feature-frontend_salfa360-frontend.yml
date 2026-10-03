@@ -47,6 +47,11 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: pnpm build
 
+      - name: Prepare deployment package
+        working-directory: frontend
+        run: |
+          pnpm install --prod --frozen-lockfile
+
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
@@ -54,7 +59,7 @@ jobs:
           path: |
             frontend/dist
             frontend/package.json
-            frontend/pnpm-lock.yaml
+            frontend/node_modules
           if-no-files-found: error
 
   deploy:
