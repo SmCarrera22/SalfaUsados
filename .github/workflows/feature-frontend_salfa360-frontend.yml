@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - salfa360-frontend
+name: Build and deploy Salfa360 frontend to Azure App Service
 
 on:
   push:
@@ -12,42 +12,66 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '24.x'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
 
-      - name: Upload artifact for deployment job
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_ENTRA_CLIENT_ID: ${{ secrets.VITE_ENTRA_CLIENT_ID }}
+          VITE_ENTRA_TENANT_ID: ${{ secrets.VITE_ENTRA_TENANT_ID }}
+          VITE_ENTRA_REDIRECT_URI: ${{ secrets.VITE_ENTRA_REDIRECT_URI }}
+          VITE_ENTRA_API_CLIENT_ID: ${{ secrets.VITE_ENTRA_API_CLIENT_ID }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: pnpm build
+
+      - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: .
+          name: salfa360-frontend
+          path: |
+            frontend/dist
+            frontend/package.json
+            frontend/pnpm-lock.yaml
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download frontend artifact
         uses: actions/download-artifact@v4
         with:
-          name: node-app
-      
+          name: salfa360-frontend
+          path: frontend
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -55,11 +79,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F51FB2EBA1144DBB9576EA9AE5CA3017 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_029164F7D9CF4BC9A41868039A49D560 }}
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+      - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'salfa360-frontend'
           slot-name: 'Production'
-          package: .
-          
+          package: frontend
