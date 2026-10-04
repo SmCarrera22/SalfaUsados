@@ -47,4 +47,5 @@ dist/
 .env.*
 !.env.example
 
+# Deployment artifacts
 deploy/

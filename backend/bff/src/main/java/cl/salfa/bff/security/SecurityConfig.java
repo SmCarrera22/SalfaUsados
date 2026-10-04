@@ -123,7 +123,10 @@ public class SecurityConfig {
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://salfa360-frontend-aqgtg0adhgaffvaq.westus-01.azurewebsites.net"
+                )
         );
 
         configuration.setAllowedMethods(
