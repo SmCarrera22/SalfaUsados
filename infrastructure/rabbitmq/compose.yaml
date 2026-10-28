@@ -1,0 +1,67 @@
+
+name: salfa360-rabbitmq
+
+services:
+  rabbit1:
+    image: rabbitmq:4.1.8-management
+    hostname: rabbit1
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_NODENAME: rabbit@rabbit1
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:?Cookie required}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?User required}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Password required}
+
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+
+    volumes:
+      - rabbit1_data:/var/lib/rabbitmq
+
+    networks:
+      - rabbitmq_net
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  rabbit2:
+    image: rabbitmq:4.1.8-management
+    hostname: rabbit2
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_NODENAME: rabbit@rabbit2
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:?Cookie required}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?User required}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Password required}
+
+    ports:
+      - "127.0.0.1:5673:5672"
+      - "127.0.0.1:15673:15672"
+
+    volumes:
+      - rabbit2_data:/var/lib/rabbitmq
+
+    networks:
+      - rabbitmq_net
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+networks:
+  rabbitmq_net:
+    driver: bridge
+
+volumes:
+  rabbit1_data:
+  rabbit2_data:
