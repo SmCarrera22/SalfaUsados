@@ -73,6 +73,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**")
                         .hasRole("ADMIN")
 
+                        .requestMatchers("/api/rabbit-admin/**")
+                        .hasRole("ADMIN")
+
                         .anyRequest()
                         .authenticated()
                 )
