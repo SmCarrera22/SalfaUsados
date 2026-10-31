@@ -1,10 +1,9 @@
+
 package cl.salfa.workshop.messaging.listener;
 
 import cl.salfa.workshop.config.RabbitNames;
-import cl.salfa.workshop.dto.WorkshopOrderRequest;
-import cl.salfa.workshop.dto.WorkshopOrderResponse;
 import cl.salfa.workshop.messaging.dto.CreateWorkshopOrderCommand;
-import cl.salfa.workshop.service.WorkshopOrderService;
+import cl.salfa.workshop.service.WorkshopCommandService;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -24,69 +24,67 @@ public class WorkshopCommandListener {
             LoggerFactory.getLogger(WorkshopCommandListener.class);
 
     private final ObjectMapper objectMapper;
-    private final WorkshopOrderService orderService;
+    private final WorkshopCommandService commandService;
 
     @RabbitListener(queues = RabbitNames.WORKSHOP_QUEUE)
     public void consume(Message message, Channel channel)
             throws IOException {
 
-        long deliveryTag =
-                message.getMessageProperties().getDeliveryTag();
+        long tag = message.getMessageProperties().getDeliveryTag();
+
+        CreateWorkshopOrderCommand command;
 
         try {
             String json = new String(
                     message.getBody(),
-                    java.nio.charset.StandardCharsets.UTF_8
+                    StandardCharsets.UTF_8
             );
 
-            CreateWorkshopOrderCommand command =
-                    objectMapper.readValue(
-                            json,
-                            CreateWorkshopOrderCommand.class
-                    );
+            command = objectMapper.readValue(
+                    json,
+                    CreateWorkshopOrderCommand.class
+            );
 
-            if (command.eventId() == null
+            if (command == null
+                    || command.eventId() == null
                     || command.vehicleId() == null
                     || command.workshopId() == null
                     || command.entryDate() == null
                     || command.description() == null
                     || command.description().isBlank()) {
                 throw new IllegalArgumentException(
-                        "Comando incompleto"
+                        "Comando de taller incompleto"
                 );
             }
 
-            WorkshopOrderResponse result = orderService.create(
-                    new WorkshopOrderRequest(
-                            command.vehicleId(),
-                            command.workshopId(),
-                            command.entryDate(),
-                            command.estimatedExitDate(),
-                            command.description()
-                    )
-            );
+        } catch (Exception ex) {
+            log.error("Comando de taller inválido", ex);
+            channel.basicNack(tag, false, false);
+            return;
+        }
+
+        try {
+            var result = commandService.process(command);
 
             log.info(
-                    "Orden procesada. eventId={}, orderId={}",
+                    "COMANDO PROCESADO: eventId={}, orderId={}, nuevo={}",
                     command.eventId(),
-                    result.id()
+                    result.order().id(),
+                    result.newlyCreated()
             );
 
-            channel.basicAck(deliveryTag, false);
+            channel.basicAck(tag, false);
 
         } catch (Exception ex) {
-
             log.error(
-                    "Error procesando comando de taller: {}",
-                    ex.getMessage(),
+                    "Fallo procesando comando eventId={}",
+                    command.eventId(),
                     ex
             );
 
-            channel.basicNack(
-                    deliveryTag,
-                    false,
-                    false
-            );
+            // Política provisional: conservar el mensaje en DLQ.
+            // Falta clasificar fallos transitorios y aplicar reintentos acotados.
+            channel.basicNack(tag, false, false);
         }
     }
 }
