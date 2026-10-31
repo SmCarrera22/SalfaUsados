@@ -29,4 +29,13 @@ public class BffExceptionHandler {
                 .headers(headers)
                 .body(exception.getResponseBodyAsString());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleInvalidArgument(
+            IllegalArgumentException exception
+    ) {
+        return ResponseEntity
+                .badRequest()
+                .body(exception.getMessage());
+    }
 }
