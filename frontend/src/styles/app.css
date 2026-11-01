@@ -1907,3 +1907,49 @@ input:checked
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================
+   WORKSHOPS - EP2
+   ========================================= */
+
+.workshop-form-grid {
+  grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+}
+
+.workshop-form-grid .form-field-wide {
+  grid-column: 1 / -1;
+}
+
+.workshop-form-grid textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+
+  border: 1px solid #dce1e8;
+  border-radius: 8px;
+
+  color: var(--text-primary);
+  background: white;
+
+  font: inherit;
+  resize: vertical;
+}
+
+.workshop-form-grid textarea:focus {
+  outline: none;
+  border-color: var(--salfa-blue);
+  box-shadow: 0 0 0 3px rgba(0, 87, 168, 0.08);
+}
+
+@media (max-width: 760px) {
+  .workshop-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Separación entre listado y formulario de talleres */
+
+.workshops-list-card {
+  margin-bottom: 24px;
+}

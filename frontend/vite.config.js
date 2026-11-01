@@ -1,12 +1,7 @@
-import {
-  defineConfig,
-} from 'vite';
 
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-
-import {
-  resolve,
-} from 'path';
+import { resolve } from 'node:path';
 
 export default defineConfig({
   plugins: [
@@ -17,12 +12,12 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(
-            __dirname,
+            import.meta.dirname,
             'index.html',
         ),
 
         redirect: resolve(
-            __dirname,
+            import.meta.dirname,
             'redirect.html',
         ),
       },
