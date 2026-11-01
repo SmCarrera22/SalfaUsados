@@ -3,6 +3,7 @@ import {
     CarFront,
     Users,
     LogOut,
+    Wrench,
 } from 'lucide-react';
 
 import {
@@ -57,6 +58,16 @@ export default function Sidebar() {
                 >
                     <CarFront size={19} />
                     Inventario
+                </NavLink>
+
+                <NavLink
+                    to="/workshops"
+                    className={({ isActive }) =>
+                        `nav-item ${isActive ? 'active' : ''}`
+                    }
+                >
+                    <Wrench size={19} />
+                    Talleres
                 </NavLink>
 
                 {isAdmin && (

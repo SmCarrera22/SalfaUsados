@@ -235,3 +235,31 @@ export const userApi = {
         );
     },
 };
+
+
+export const workshopApi = {
+    getAll() {
+        return apiRequest('/api/workshops');
+    },
+
+    getById(id) {
+        return apiRequest(`/api/workshops/${id}`);
+    },
+
+    getOrdersByVehicle(vehicleId) {
+        return apiRequest(
+            `/api/workshop-orders/vehicle/${vehicleId}`,
+        );
+    },
+
+    getOrderById(id) {
+        return apiRequest(`/api/workshop-orders/${id}`);
+    },
+
+    createOrderAsync(payload) {
+        return apiRequest('/api/workshop-orders/commands', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        });
+    },
+};

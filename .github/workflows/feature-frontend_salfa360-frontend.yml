@@ -6,7 +6,7 @@ name: Build and deploy Salfa360 frontend to Azure App Service
 on:
   push:
     branches:
-      - 'feature/frontend'
+      - main
   workflow_dispatch:
 
 jobs:
