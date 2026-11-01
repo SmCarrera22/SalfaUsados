@@ -105,4 +105,15 @@ public class WorkshopBffController {
                 body
         );
     }
+
+    @PostMapping("/api/workshop-orders/commands")
+    public ResponseEntity<String> createOrderAsync(
+            @RequestBody String body
+    ) {
+        return service.send(
+                HttpMethod.POST,
+                "/api/workshop-orders/commands",
+                body
+        );
+    }
 }

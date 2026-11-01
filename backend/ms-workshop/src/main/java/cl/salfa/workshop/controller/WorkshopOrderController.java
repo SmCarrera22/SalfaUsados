@@ -1,6 +1,8 @@
 package cl.salfa.workshop.controller;
 
 import cl.salfa.workshop.dto.*;
+import cl.salfa.workshop.messaging.dto.CreateWorkshopOrderCommand;
+import cl.salfa.workshop.messaging.publisher.WorkshopCommandPublisher;
 import cl.salfa.workshop.service.WorkshopOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/workshop-orders")
@@ -16,6 +19,7 @@ import java.util.List;
 public class WorkshopOrderController {
 
     private final WorkshopOrderService orderService;
+    private final WorkshopCommandPublisher commandPublisher;
 
     @PostMapping
     public ResponseEntity<WorkshopOrderResponse> create(
@@ -23,6 +27,32 @@ public class WorkshopOrderController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(orderService.create(request));
+    }
+
+    @PostMapping("/commands")
+    public ResponseEntity<AcceptedCommandResponse> createAsync(
+            @Valid @RequestBody WorkshopOrderRequest request
+    ) {
+        UUID commandId = UUID.randomUUID();
+
+        CreateWorkshopOrderCommand command =
+                new CreateWorkshopOrderCommand(
+                        commandId,
+                        request.vehicleId(),
+                        request.workshopId(),
+                        request.entryDate(),
+                        request.estimatedExitDate(),
+                        request.description()
+                );
+
+        commandPublisher.publish(command);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(new AcceptedCommandResponse(
+                        commandId,
+                        "Comando enviado para procesamiento"
+                ));
     }
 
     @GetMapping("/{id}")
@@ -63,4 +93,9 @@ public class WorkshopOrderController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(orderService.transfer(id, request));
     }
+
+    public record AcceptedCommandResponse(
+            UUID commandId,
+            String message
+    ) {}
 }
