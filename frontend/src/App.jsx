@@ -38,6 +38,9 @@ import {
     useAuth,
 } from './auth/AuthContext';
 
+import WorkshopsPage
+    from './pages/WorkshopsPage';
+
 function LoginRoute() {
     const {
         isAuthenticated,
@@ -83,6 +86,11 @@ function App() {
                 <Route
                     path="/vehicles"
                     element={<VehiclesPage />}
+                />
+
+                <Route
+                    path="/workshops"
+                    element={<WorkshopsPage />}
                 />
 
                 <Route
