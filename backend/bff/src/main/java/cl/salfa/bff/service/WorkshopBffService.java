@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -22,6 +25,7 @@ public class WorkshopBffService {
     public ResponseEntity<String> get(String path) {
         return restClient.get()
                 .uri(path)
+                .headers(headers -> headers.setBearerAuth(currentAccessToken()))
                 .retrieve()
                 .toEntity(String.class);
     }
@@ -33,9 +37,26 @@ public class WorkshopBffService {
     ) {
         return restClient.method(method)
                 .uri(path)
+                .headers(headers -> headers.setBearerAuth(currentAccessToken()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(json)
                 .retrieve()
                 .toEntity(String.class);
+    }
+
+    private String currentAccessToken() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)
+                || !authentication.isAuthenticated()) {
+            throw new org.springframework.security.authentication
+                    .AuthenticationCredentialsNotFoundException(
+                    "No existe un JWT autenticado para reenviar"
+            );
+        }
+
+        return jwtAuthentication.getToken().getTokenValue();
     }
 }
