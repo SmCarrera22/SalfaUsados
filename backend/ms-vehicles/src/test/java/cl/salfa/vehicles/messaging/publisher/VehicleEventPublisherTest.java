@@ -158,8 +158,7 @@ class VehicleEventPublisherTest {
                 json
         )).thenReturn(future);
 
-        publisher.publish(event);
-
+        var result = publisher.publish(event);
         future.completeExceptionally(
                 new RuntimeException("Kafka no disponible")
         );
@@ -170,6 +169,7 @@ class VehicleEventPublisherTest {
                 json
         );
 
-        assertTrue(future.isCompletedExceptionally());
+        assertSame(future, result);
+        assertTrue(result.isCompletedExceptionally());
     }
 }
