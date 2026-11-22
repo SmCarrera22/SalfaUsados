@@ -94,6 +94,12 @@ public class VehicleOutboxEvent {
     @Column(name = "last_error", columnDefinition = "TEXT")
     private String lastError;
 
+    @Column(name = "claim_token")
+    private UUID claimToken;
+
+    @Column(name = "claimed_until")
+    private Instant claimedUntil;
+
     protected VehicleOutboxEvent() {
         // Constructor requerido por JPA
     }
@@ -171,4 +177,56 @@ public class VehicleOutboxEvent {
     public String getLastError() {
         return lastError;
     }
+
+    public UUID getClaimToken() {
+        return claimToken;
+    }
+
+    public Instant getClaimedUntil() {
+        return claimedUntil;
+    }
+
+    public void claim(UUID token, Instant until) {
+        if (token == null || until == null) {
+            throw new IllegalArgumentException(
+                    "Token y vencimiento son obligatorios"
+            );
+        }
+
+        this.status = OutboxStatus.PROCESSING;
+        this.claimToken = token;
+        this.claimedUntil = until;
+        this.attempts++;
+    }
+
+    public boolean isOwnedBy(UUID token) {
+        return token != null
+                && status == OutboxStatus.PROCESSING
+                && token.equals(claimToken);
+    }
+
+    public void markPublished(Instant when) {
+        this.status = OutboxStatus.PUBLISHED;
+        this.publishedAt = when;
+        this.claimToken = null;
+        this.claimedUntil = null;
+        this.nextAttemptAt = null;
+        this.lastError = null;
+    }
+
+    public void scheduleRetry(Instant when, String error) {
+        this.status = OutboxStatus.PENDING;
+        this.nextAttemptAt = when;
+        this.lastError = error;
+        this.claimToken = null;
+        this.claimedUntil = null;
+    }
+
+    public void markFailed(String error) {
+        this.status = OutboxStatus.FAILED;
+        this.lastError = error;
+        this.claimToken = null;
+        this.claimedUntil = null;
+    }
+
 }
