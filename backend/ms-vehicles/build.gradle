@@ -23,6 +23,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-kafka'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -31,12 +32,30 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testCompileOnly 'org.projectlombok:lombok'
 	testRuntimeOnly 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
+
 tasks.named('test') {
-	useJUnitPlatform()
+	useJUnitPlatform {
+		excludeTags 'external-kafka'
+	}
+}
+
+tasks.register('externalKafkaTest', Test) {
+	description = 'Ejecuta pruebas contra Kafka externo'
+	group = 'verification'
+
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+
+	useJUnitPlatform {
+		includeTags 'external-kafka'
+	}
+
+	shouldRunAfter tasks.named('test')
 }
