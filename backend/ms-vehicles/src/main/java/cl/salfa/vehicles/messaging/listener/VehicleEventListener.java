@@ -1,6 +1,7 @@
 package cl.salfa.vehicles.messaging.listener;
 
 import cl.salfa.vehicles.messaging.dto.VehicleEvent;
+import cl.salfa.vehicles.service.VehicleHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class VehicleEventListener {
             LoggerFactory.getLogger(VehicleEventListener.class);
 
     private final ObjectMapper objectMapper;
+    private final VehicleHistoryService historyService;
 
     @KafkaListener(
             topics = "${salfa.kafka.topics.vehicles}",
@@ -40,23 +42,31 @@ public class VehicleEventListener {
 
             validate(event, record.key());
 
-            log.info(
-                    "Evento Kafka recibido: eventId={}, " +
-                            "type={}, vin={}, partition={}, offset={}",
-                    event.eventId(),
-                    event.eventType(),
-                    event.vin(),
-                    record.partition(),
-                    record.offset()
-            );
+            boolean inserted = historyService.register(event);
 
-            // Por ahora solo validamos y observamos el evento.
-            // La persistencia del historial se implementara
-            // en un servicio de negocio independiente.
+            if (inserted) {
+                log.info(
+                        "Historial registrado: eventId={}, " +
+                                "type={}, vin={}, partition={}, offset={}",
+                        event.eventId(),
+                        event.eventType(),
+                        event.vin(),
+                        record.partition(),
+                        record.offset()
+                );
+            } else {
+                log.info(
+                        "Evento duplicado ignorado: eventId={}, vin={}",
+                        event.eventId(),
+                        event.vin()
+                );
+            }
 
+            // Confirmar solo despues de persistir.
             acknowledgment.acknowledge();
 
         } catch (Exception ex) {
+
             log.error(
                     "Error procesando evento Kafka: " +
                             "topic={}, partition={}, offset={}",
@@ -66,6 +76,7 @@ public class VehicleEventListener {
                     ex
             );
 
+            // El error handler se encarga de reintentos y DLQ.
             throw new IllegalStateException(
                     "No fue posible procesar el evento Kafka",
                     ex
