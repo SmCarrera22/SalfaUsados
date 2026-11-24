@@ -42,7 +42,7 @@ public class VehicleBffController {
                 vehicleService.findHistoryByVin(vin)
         );
     }
-    
+
     @PostMapping
     public ResponseEntity<VehicleResponse> create(
             @RequestBody VehicleRequest request

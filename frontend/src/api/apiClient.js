@@ -252,6 +252,12 @@ export const workshopApi = {
         return apiRequest(`/api/workshops/${id}`);
     },
 
+    getMetricsByWorkshop(id) {
+        return apiRequest(
+            `/api/workshops/${id}/metrics`
+        );
+    },
+
     getOrdersByVehicle(vehicleId) {
         return apiRequest(
             `/api/workshop-orders/vehicle/${vehicleId}`,
