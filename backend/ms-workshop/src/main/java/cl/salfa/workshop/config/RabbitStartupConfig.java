@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("!test")
+@Profile("!test & !kafka-it")
 @RequiredArgsConstructor
 public class RabbitStartupConfig {
 

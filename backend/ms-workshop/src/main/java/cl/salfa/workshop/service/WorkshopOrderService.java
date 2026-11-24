@@ -6,6 +6,7 @@ import cl.salfa.workshop.repository.WorkshopOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import cl.salfa.workshop.messaging.kafka.WorkshopKafkaOutboxService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,6 +18,7 @@ public class WorkshopOrderService {
 
     private final WorkshopOrderRepository orderRepository;
     private final WorkshopService workshopService;
+    private final WorkshopKafkaOutboxService kafkaOutboxService;
 
     @Transactional
     public WorkshopOrderResponse create(WorkshopOrderRequest request) {
@@ -47,7 +49,12 @@ public class WorkshopOrderService {
                 .status(WorkshopOrderStatus.OPEN)
                 .build();
 
-        return toResponse(orderRepository.save(order));
+        WorkshopOrderResponse response =
+                toResponse(orderRepository.save(order));
+
+        kafkaOutboxService.registerCreated(response);
+
+        return response;
     }
 
     @Transactional(readOnly = true)
