@@ -13,6 +13,7 @@ import {
     RefreshCw,
     AlertCircle,
     SlidersHorizontal,
+    Eye,
 } from 'lucide-react';
 
 import {
@@ -401,7 +402,7 @@ export default function VehiclesPage() {
                                 <th>Año</th>
                                 <th>Kilometraje</th>
                                 <th>Sucursal</th>
-                                <th>Estado</th>
+                                <th>Perfil</th>
 
                                 {canCreateOrEdit && (
                                     <th className="actions-column">
@@ -469,6 +470,17 @@ export default function VehiclesPage() {
                                                     vehicle.status
                                                 }
                                             />
+                                        </td>
+
+                                        <td>
+                                            <Link
+                                                to={`/vehicles/${vehicle.id}`}
+                                                className="table-action-button"
+                                                title="Ver perfil operativo"
+                                                aria-label={`Ver perfil de ${vehicle.plate}`}
+                                            >
+                                                <Eye size={17} />
+                                            </Link>
                                         </td>
 
                                         {canCreateOrEdit && (

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import cl.salfa.bff.dto.VehicleHistoryResponse;
 
 import java.util.List;
 
@@ -37,6 +38,21 @@ public class VehicleBffService {
                 .uri("/api/vehicles/{id}", id)
                 .retrieve()
                 .body(VehicleResponse.class);
+    }
+
+    public List<VehicleHistoryResponse> findHistoryByVin(
+            String vin
+    ) {
+        return restClient
+                .get()
+                .uri(
+                        "/api/vehicles/vin/{vin}/history",
+                        vin
+                )
+                .retrieve()
+                .body(
+                        new ParameterizedTypeReference<>() {}
+                );
     }
 
     public VehicleResponse create(VehicleRequest request) {

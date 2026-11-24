@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import cl.salfa.bff.dto.VehicleHistoryResponse;
 
 import java.util.List;
 
@@ -33,6 +34,15 @@ public class VehicleBffController {
         );
     }
 
+    @GetMapping("/vin/{vin}/history")
+    public ResponseEntity<List<VehicleHistoryResponse>> findHistory(
+            @PathVariable String vin
+    ) {
+        return ResponseEntity.ok(
+                vehicleService.findHistoryByVin(vin)
+        );
+    }
+    
     @PostMapping
     public ResponseEntity<VehicleResponse> create(
             @RequestBody VehicleRequest request

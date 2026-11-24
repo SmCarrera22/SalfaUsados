@@ -163,6 +163,12 @@ export const vehicleApi = {
         );
     },
 
+    getHistoryByVin(vin) {
+        return apiRequest(
+            `/api/vehicles/vin/${encodeURIComponent(vin)}/history`,
+        );
+    },
+
     create(vehicle) {
         return apiRequest(
             '/api/vehicles',
