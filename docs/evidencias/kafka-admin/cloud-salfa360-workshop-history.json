@@ -1,0 +1,28 @@
+{
+    "state": "Stable",
+    "groupId": "salfa360-workshop-history",
+    "members": 1,
+    "partitions": [
+        {
+            "topic": "workshop.events",
+            "partition": 2,
+            "currentOffset": null,
+            "logEndOffset": 0,
+            "lag": null
+        },
+        {
+            "topic": "workshop.events",
+            "partition": 1,
+            "currentOffset": null,
+            "logEndOffset": 0,
+            "lag": null
+        },
+        {
+            "topic": "workshop.events",
+            "partition": 0,
+            "currentOffset": null,
+            "logEndOffset": 0,
+            "lag": null
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+[
+    "vehicle.events",
+    "vehicle.events.dlq",
+    "workshop.events",
+    "workshop.events.dlq"
+]
