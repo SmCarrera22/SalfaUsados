@@ -1,0 +1,5 @@
+  branch  |   event_type    | total_events 
+----------+-----------------+--------------
+ SANTIAGO | VEHICLE_CREATED |            4
+(1 row)
+

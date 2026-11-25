@@ -1,0 +1,5 @@
+               event_id               |        vin        |   event_type    | procesamiento 
+--------------------------------------+-------------------+-----------------+---------------
+ 2cf12d7c-75ab-4530-bcf5-b9ac3a3bab8a | 1HGCM82633A123457 | VEHICLE_CREATED | AMBOS GRUPOS
+(1 row)
+

@@ -1,0 +1,13 @@
+
+===== salfa360-vehicle-history =====
+
+GROUP                    TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                                              HOST            CLIENT-ID
+salfa360-vehicle-history vehicle.events  0          3               3               0               consumer-salfa360-vehicle-history-2-56f6f7e0-9571-41e9-bdaf-04d8ecccde46 /172.18.0.1     consumer-salfa360-vehicle-history-2
+salfa360-vehicle-history vehicle.events  1          -               0               -               consumer-salfa360-vehicle-history-2-56f6f7e0-9571-41e9-bdaf-04d8ecccde46 /172.18.0.1     consumer-salfa360-vehicle-history-2
+salfa360-vehicle-history vehicle.events  2          5               5               0               consumer-salfa360-vehicle-history-2-56f6f7e0-9571-41e9-bdaf-04d8ecccde46 /172.18.0.1     consumer-salfa360-vehicle-history-2
+===== salfa360-vehicle-analytics =====
+
+GROUP                      TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                                                HOST            CLIENT-ID
+salfa360-vehicle-analytics vehicle.events  0          3               3               0               consumer-salfa360-vehicle-analytics-1-18dfb9b4-1fae-4b75-b13d-deef964eca1c /172.18.0.1     consumer-salfa360-vehicle-analytics-1
+salfa360-vehicle-analytics vehicle.events  1          -               0               -               consumer-salfa360-vehicle-analytics-1-18dfb9b4-1fae-4b75-b13d-deef964eca1c /172.18.0.1     consumer-salfa360-vehicle-analytics-1
+salfa360-vehicle-analytics vehicle.events  2          5               5               0               consumer-salfa360-vehicle-analytics-1-18dfb9b4-1fae-4b75-b13d-deef964eca1c /172.18.0.1     consumer-salfa360-vehicle-analytics-1
