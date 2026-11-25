@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,8 @@ public class WorkshopKafkaOutboxDispatcher {
 
     private final JdbcTemplate jdbcTemplate;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    @Value("${salfa.kafka.topics.workshops}")
+    private String workshopTopic;
 
     private record ClaimedEvent(
             UUID eventId,
@@ -95,7 +98,7 @@ public class WorkshopKafkaOutboxDispatcher {
 
         try {
             var result = kafkaTemplate.send(
-                    "workshop.events",
+                    workshopTopic,
                     event.eventKey(),
                     event.payload()
             ).get(20, TimeUnit.SECONDS);

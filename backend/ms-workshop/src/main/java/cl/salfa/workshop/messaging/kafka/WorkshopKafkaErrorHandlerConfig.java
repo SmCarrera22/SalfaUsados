@@ -33,6 +33,8 @@ public class WorkshopKafkaErrorHandlerConfig {
                                 )
                 );
 
+        recoverer.setFailIfSendResultIsError(true);
+
         DefaultErrorHandler handler =
                 new DefaultErrorHandler(
                         recoverer,
