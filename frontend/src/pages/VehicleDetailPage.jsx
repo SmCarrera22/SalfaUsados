@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -19,6 +18,8 @@ import {
 
 import VehicleStatusBadge
     from '../components/vehicles/VehicleStatusBadge';
+
+const HISTORY_POLL_INTERVAL_MS = 5000;
 
 const EVENT_LABELS = {
     VEHICLE_CREATED: 'Vehículo registrado',
@@ -66,6 +67,12 @@ export default function VehicleDetailPage() {
     const [ordersError, setOrdersError] = useState('');
 
     const [refreshKey, setRefreshKey] = useState(0);
+
+    const vin = vehicle?.vin;
+
+    // ==========================================
+    // CARGA INICIAL DEL PERFIL OPERATIVO
+    // ==========================================
 
     useEffect(() => {
         let cancelled = false;
@@ -145,6 +152,64 @@ export default function VehicleDetailPage() {
             cancelled = true;
         };
     }, [id, refreshKey]);
+
+    // ==========================================
+    // POLLING AUTOMATICO DEL HISTORIAL KAFKA
+    // ==========================================
+
+    useEffect(() => {
+        if (!vin || loading || error) {
+            return;
+        }
+
+        let cancelled = false;
+        let inFlight = false;
+
+        async function refreshHistory() {
+            if (cancelled || inFlight) {
+                return;
+            }
+
+            inFlight = true;
+
+            try {
+                const data =
+                    await vehicleApi.getHistoryByVin(vin);
+
+                if (!cancelled) {
+                    setHistory(
+                        Array.isArray(data) ? data : []
+                    );
+
+                    setHistoryError('');
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setHistoryError(
+                        err.message ??
+                        'No fue posible actualizar el historial.'
+                    );
+                }
+            } finally {
+                inFlight = false;
+            }
+        }
+
+        const intervalId = window.setInterval(
+            refreshHistory,
+            HISTORY_POLL_INTERVAL_MS
+        );
+
+        return () => {
+            cancelled = true;
+            window.clearInterval(intervalId);
+        };
+
+    }, [vin, loading, error, id, refreshKey]);
+
+    // ==========================================
+    // INTERFAZ DEL PERFIL OPERATIVO
+    // ==========================================
 
     return (
         <div>
@@ -261,9 +326,11 @@ export default function VehicleDetailPage() {
 
                             <div>
                                 <h3>Historial de eventos</h3>
+
                                 <p>
-                                    Movimientos registrados mediante
-                                    Kafka y persistidos por VIN.
+                                    Movimientos registrados mediante Kafka y
+                                    persistidos por VIN. Actualización
+                                    automática cada 5 segundos.
                                 </p>
                             </div>
                         </div>
@@ -282,7 +349,7 @@ export default function VehicleDetailPage() {
                             </div>
                         )}
 
-                        {!historyError && history.length > 0 && (
+                        {history.length > 0 && (
                             <div className="table-container">
                                 <table className="data-table">
                                     <thead>
@@ -329,6 +396,7 @@ export default function VehicleDetailPage() {
 
                             <div>
                                 <h3>Órdenes de taller</h3>
+
                                 <p>
                                     Órdenes asociadas al identificador
                                     del vehículo.

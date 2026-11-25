@@ -18,6 +18,11 @@ import tools.jackson.databind.ObjectMapper;
         name = "salfa.kafka.enabled",
         havingValue = "true"
 )
+@ConditionalOnProperty(
+        name = "salfa.kafka.history.enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class VehicleEventListener {
 
     private static final Logger log =
@@ -28,7 +33,7 @@ public class VehicleEventListener {
 
     @KafkaListener(
             topics = "${salfa.kafka.topics.vehicles}",
-            groupId = "${spring.kafka.consumer.group-id}"
+            groupId = "${salfa.kafka.groups.history}"
     )
     public void consume(
             ConsumerRecord<String, String> record,

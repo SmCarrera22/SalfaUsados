@@ -38,6 +38,8 @@ public class KafkaErrorHandlerConfig {
                 2L
         );
 
+        recoverer.setFailIfSendResultIsError(true);
+
         DefaultErrorHandler handler =
                 new DefaultErrorHandler(
                         recoverer,
