@@ -1,1 +1,16 @@
-
+[
+    {
+        "id": 8,
+        "vehicleId": 11,
+        "workshopId": 1,
+        "workshopName": "Taller EP2 Pruebas",
+        "entryDate": "2026-11-25",
+        "estimatedExitDate": "2026-11-30",
+        "actualExitDate": null,
+        "approvedBudget": null,
+        "finalCost": null,
+        "description": "Prueba integracion cloud EP5 EP6 RabbitMQ Kafka",
+        "status": "OPEN",
+        "closureReason": null
+    }
+]

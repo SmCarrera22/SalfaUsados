@@ -20,9 +20,9 @@
         {
             "topic": "workshop.events",
             "partition": 0,
-            "currentOffset": null,
-            "logEndOffset": 0,
-            "lag": null
+            "currentOffset": 1,
+            "logEndOffset": 1,
+            "lag": 0
         }
     ]
 }

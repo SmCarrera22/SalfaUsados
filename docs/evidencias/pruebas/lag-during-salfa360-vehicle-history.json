@@ -20,8 +20,8 @@
         {
             "topic": "vehicle.events",
             "partition": 2,
-            "currentOffset": 1,
-            "logEndOffset": 1,
+            "currentOffset": 2,
+            "logEndOffset": 2,
             "lag": 0
         }
     ]

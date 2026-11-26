@@ -343,4 +343,3 @@ Las pruebas locales y cloud se encuentran en:
 
 Los resultados deben interpretarse de acuerdo con
 las evidencias efectivamente obtenidas.
-

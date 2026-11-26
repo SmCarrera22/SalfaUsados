@@ -23,11 +23,15 @@ public class WorkshopBffService {
     }
 
     public ResponseEntity<String> get(String path) {
-        return restClient.get()
+
+        ResponseEntity<String> response = restClient.get()
                 .uri(path)
-                .headers(headers -> headers.setBearerAuth(currentAccessToken()))
+                .headers(headers ->
+                        headers.setBearerAuth(currentAccessToken()))
                 .retrieve()
                 .toEntity(String.class);
+
+        return buildResponse(response);
     }
 
     public ResponseEntity<String> send(
@@ -35,22 +39,50 @@ public class WorkshopBffService {
             String path,
             String json
     ) {
-        return restClient.method(method)
+
+        ResponseEntity<String> response = restClient.method(method)
                 .uri(path)
-                .headers(headers -> headers.setBearerAuth(currentAccessToken()))
+                .headers(headers ->
+                        headers.setBearerAuth(currentAccessToken()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(json)
                 .retrieve()
                 .toEntity(String.class);
+
+        return buildResponse(response);
+    }
+
+    private ResponseEntity<String> buildResponse(
+            ResponseEntity<String> response
+    ) {
+
+        ResponseEntity.BodyBuilder builder =
+                ResponseEntity.status(response.getStatusCode());
+
+        MediaType contentType =
+                response.getHeaders().getContentType();
+
+        if (contentType != null) {
+            builder.contentType(contentType);
+        }
+
+        if (response.getHeaders().getLocation() != null) {
+            builder.location(response.getHeaders().getLocation());
+        }
+
+        return builder.body(response.getBody());
     }
 
     private String currentAccessToken() {
 
         Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+                SecurityContextHolder.getContext()
+                        .getAuthentication();
 
-        if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)
+        if (!(authentication instanceof
+                JwtAuthenticationToken jwtAuthentication)
                 || !authentication.isAuthenticated()) {
+
             throw new org.springframework.security.authentication
                     .AuthenticationCredentialsNotFoundException(
                     "No existe un JWT autenticado para reenviar"

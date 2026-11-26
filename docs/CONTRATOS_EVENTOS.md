@@ -69,4 +69,3 @@ el codigo fuente de ms-workshop.
 
 Kafka mantiene el orden dentro de una particion.
 No se garantiza orden global entre particiones.
-

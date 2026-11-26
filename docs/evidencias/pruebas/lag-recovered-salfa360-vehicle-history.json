@@ -1,13 +1,27 @@
 {
-    "state": "Empty",
+    "state": "Stable",
     "groupId": "salfa360-vehicle-history",
-    "members": 0,
+    "members": 1,
     "partitions": [
         {
             "topic": "vehicle.events",
+            "partition": 0,
+            "currentOffset": null,
+            "logEndOffset": 0,
+            "lag": null
+        },
+        {
+            "topic": "vehicle.events",
+            "partition": 1,
+            "currentOffset": null,
+            "logEndOffset": 0,
+            "lag": null
+        },
+        {
+            "topic": "vehicle.events",
             "partition": 2,
-            "currentOffset": 1,
-            "logEndOffset": 1,
+            "currentOffset": 2,
+            "logEndOffset": 2,
             "lag": 0
         }
     ]

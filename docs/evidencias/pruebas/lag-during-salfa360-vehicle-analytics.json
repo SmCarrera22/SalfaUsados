@@ -7,8 +7,8 @@
             "topic": "vehicle.events",
             "partition": 2,
             "currentOffset": 1,
-            "logEndOffset": 1,
-            "lag": 0
+            "logEndOffset": 2,
+            "lag": 1
         }
     ]
 }
