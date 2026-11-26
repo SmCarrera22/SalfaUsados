@@ -1,0 +1,7 @@
+Partition:2	Offset:0	TESTVIN0000000002	{"eventId":"cccccccc-cccc-4ccc-8ccc-cccccccccccc","eventType":"VEHICLE_CREATED","vehicleId":999,"vin":"TESTVIN0000000002","test":"DLQ_INTEGRATION"}
+Partition:2	Offset:1	TESTVIN0000000001	{"eventId":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","eventType":"VEHICLE_CREATED","vehicleId":1,"vin":"TESTVIN0000000001","test":"BEFORE_FAILURE"}
+Partition:2	Offset:2	TESTVIN0000000001	{"eventId":"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb","eventType":"VEHICLE_UPDATED","vehicleId":1,"vin":"TESTVIN0000000001","test":"DURING_FAILURE"}
+Partition:2	Offset:3	TESTVIN0000000002	{"eventId":"cccccccc-cccc-4ccc-8ccc-cccccccccccc","eventType":"VEHICLE_CREATED","vehicleId":999,"vin":"TESTVIN0000000002","test":"DLQ_INTEGRATION"}
+[2026-11-25 01:27:39,776] ERROR Error processing message, terminating consumer process:  (org.apache.kafka.tools.consumer.ConsoleConsumer)
+org.apache.kafka.common.errors.TimeoutException
+Processed a total of 4 messages

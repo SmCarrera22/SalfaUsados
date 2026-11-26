@@ -1,0 +1,54 @@
+{
+    "topic": "vehicle.events",
+    "partitionCount": 3,
+    "replicationFactor": 3,
+    "partitions": [
+        {
+            "partition": 0,
+            "leader": 3,
+            "replicas": [
+                3,
+                2,
+                1
+            ],
+            "isr": [
+                2,
+                3,
+                1
+            ]
+        },
+        {
+            "partition": 1,
+            "leader": 1,
+            "replicas": [
+                1,
+                3,
+                2
+            ],
+            "isr": [
+                2,
+                3,
+                1
+            ]
+        },
+        {
+            "partition": 2,
+            "leader": 2,
+            "replicas": [
+                2,
+                1,
+                3
+            ],
+            "isr": [
+                2,
+                3,
+                1
+            ]
+        }
+    ],
+    "config": {
+        "retention.ms": "604800000",
+        "cleanup.policy": "delete",
+        "min.insync.replicas": "2"
+    }
+}

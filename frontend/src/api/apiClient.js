@@ -163,6 +163,12 @@ export const vehicleApi = {
         );
     },
 
+    getHistoryByVin(vin) {
+        return apiRequest(
+            `/api/vehicles/vin/${encodeURIComponent(vin)}/history`,
+        );
+    },
+
     create(vehicle) {
         return apiRequest(
             '/api/vehicles',
@@ -244,6 +250,12 @@ export const workshopApi = {
 
     getById(id) {
         return apiRequest(`/api/workshops/${id}`);
+    },
+
+    getMetricsByWorkshop(id) {
+        return apiRequest(
+            `/api/workshops/${id}/metrics`
+        );
     },
 
     getOrdersByVehicle(vehicleId) {

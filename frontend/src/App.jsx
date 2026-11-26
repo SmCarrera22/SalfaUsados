@@ -41,6 +41,9 @@ import {
 import WorkshopsPage
     from './pages/WorkshopsPage';
 
+import VehicleDetailPage
+    from './pages/VehicleDetailPage';
+
 function LoginRoute() {
     const {
         isAuthenticated,
@@ -86,6 +89,11 @@ function App() {
                 <Route
                     path="/vehicles"
                     element={<VehiclesPage />}
+                />
+
+                <Route
+                    path="/vehicles/:id"
+                    element={<VehicleDetailPage />}
                 />
 
                 <Route
