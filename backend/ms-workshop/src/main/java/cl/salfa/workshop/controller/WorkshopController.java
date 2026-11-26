@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import cl.salfa.workshop.dto.WorkshopMetricsResponse;
 
 import java.util.List;
 
@@ -26,6 +27,15 @@ public class WorkshopController {
     @GetMapping("/{id}")
     public ResponseEntity<Workshop> findById(@PathVariable Long id) {
         return ResponseEntity.ok(workshopService.findById(id));
+    }
+
+    @GetMapping("/{id}/metrics")
+    public ResponseEntity<WorkshopMetricsResponse> findMetrics(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(
+                workshopService.findMetrics(id)
+        );
     }
 
     @PostMapping

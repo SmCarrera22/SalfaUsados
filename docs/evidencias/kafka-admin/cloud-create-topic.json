@@ -1,0 +1,6 @@
+{
+    "topic": "salfa360.admin.cloud-ep5",
+    "partitions": 3,
+    "status": "CREATED",
+    "replicationFactor": 3
+}

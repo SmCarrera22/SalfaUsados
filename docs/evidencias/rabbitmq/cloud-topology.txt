@@ -1,0 +1,35 @@
+Timeout: 60.0 seconds ...
+Listing queues for vhost / ...
+name	type	durable	arguments	messages_ready	messages_unacknowledged	consumers
+notification.events.q	classic	true	[{"x-dead-letter-exchange","salfa360.dlx"},{"x-dead-letter-routing-key","notification.events.dlq"},{"x-max-length",10000},{"x-queue-type","classic"}]	0	0	1
+workshop.commands.q	classic	true	[{"x-dead-letter-exchange","salfa360.dlx"},{"x-dead-letter-routing-key","workshop.commands.dlq"},{"x-max-length",10000},{"x-queue-type","classic"}]	0	0	1
+notification.events.dlq	classic	true	[{"x-queue-type","classic"}]	0	0	1
+audit.events.dlq	classic	true	[{"x-queue-type","classic"}]	0	0	1
+audit.events.q	classic	true	[{"x-dead-letter-exchange","salfa360.dlx"},{"x-dead-letter-routing-key","audit.events.dlq"},{"x-max-length",10000},{"x-queue-type","classic"}]	0	0	1
+workshop.commands.dlq	classic	true	[{"x-queue-type","classic"}]	0	0	1
+Listing exchanges for vhost / ...
+name	type	durable
+amq.fanout	fanout	true
+salfa360.events	topic	true
+amq.topic	topic	true
+amq.direct	direct	true
+amq.rabbitmq.trace	topic	true
+amq.headers	headers	true
+amq.match	headers	true
+salfa360.dlx	direct	true
+	direct	true
+salfa360.commands	direct	true
+Listing bindings for vhost /...
+source_name	destination_name	routing_key
+	notification.events.q	notification.events.q
+	workshop.commands.q	workshop.commands.q
+	notification.events.dlq	notification.events.dlq
+	audit.events.dlq	audit.events.dlq
+	audit.events.q	audit.events.q
+	workshop.commands.dlq	workshop.commands.dlq
+salfa360.commands	workshop.commands.q	workshop.order.create
+salfa360.dlx	audit.events.dlq	audit.events.dlq
+salfa360.dlx	notification.events.dlq	notification.events.dlq
+salfa360.dlx	workshop.commands.dlq	workshop.commands.dlq
+salfa360.events	audit.events.q	workshop.#
+salfa360.events	notification.events.q	workshop.order.*

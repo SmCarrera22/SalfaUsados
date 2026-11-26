@@ -1,0 +1,16 @@
+HTTP/2 202
+date: Thu, 26 Nov 2026 00:55:20 GMT
+content-type: application/json
+content-length: 99
+vary: Origin
+vary: Access-Control-Request-Method
+vary: Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+apigw-requestid: HbF61hOcoAMEMFQ=
+
+{"commandId":"2edc343c-3c79-4944-a6a8-92f98754e9c3","message":"Comando enviado para procesamiento"}

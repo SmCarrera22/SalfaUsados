@@ -57,6 +57,18 @@ export default function WorkshopsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    const [selectedWorkshopId, setSelectedWorkshopId] =
+        useState('');
+
+    const [workshopMetrics, setWorkshopMetrics] =
+        useState(null);
+
+    const [metricsLoading, setMetricsLoading] =
+        useState(false);
+
+    const [metricsError, setMetricsError] =
+        useState('');
+
     // ==========================================
     // VEHÍCULOS
     // ==========================================
@@ -345,6 +357,39 @@ export default function WorkshopsPage() {
         }
     }
 
+    async function loadWorkshopMetrics() {
+        if (!selectedWorkshopId) {
+            setMetricsError('Selecciona un taller.');
+            return;
+        }
+
+        setMetricsLoading(true);
+        setMetricsError('');
+        setWorkshopMetrics(null);
+
+        try {
+            const data =
+                await workshopApi.getMetricsByWorkshop(
+                    selectedWorkshopId
+                );
+
+            if (!data) {
+                throw new Error(
+                    'No se recibieron métricas del taller.'
+                );
+            }
+
+            setWorkshopMetrics(data);
+        } catch (err) {
+            setMetricsError(
+                err.message ??
+                'No fue posible consultar las métricas.'
+            );
+        } finally {
+            setMetricsLoading(false);
+        }
+    }
+
     // ==========================================
     // RENDER
     // ==========================================
@@ -414,6 +459,138 @@ export default function WorkshopsPage() {
                     <span>Mensajería</span>
                     <strong>RabbitMQ</strong>
                 </div>
+            </section>
+
+            {/* METRICAS OPERATIVAS */}
+
+            <section className="content-card inventory-card">
+                <div className="form-section-header">
+                    <div className="form-section-icon">
+                        <ClipboardList size={21} />
+                    </div>
+
+                    <div>
+                        <h3>Indicadores operativos por taller</h3>
+                        <p>
+                            Consulta órdenes y costos registrados
+                            para un taller determinado.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="inventory-toolbar">
+                    <div className="search-box">
+                        <Wrench size={18} />
+
+                        <select
+                            value={selectedWorkshopId}
+                            disabled={loading}
+                            aria-label="Seleccionar taller para métricas"
+                            onChange={(event) => {
+                                setSelectedWorkshopId(event.target.value);
+                                setWorkshopMetrics(null);
+                                setMetricsError('');
+                            }}
+                        >
+                            <option value="">
+                                Seleccionar taller
+                            </option>
+
+                            {workshops.map(workshop => (
+                                <option
+                                    key={workshop.id}
+                                    value={workshop.id}
+                                >
+                                    {workshop.name} — #{workshop.id}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="secondary-button"
+                        disabled={
+                            !selectedWorkshopId ||
+                            metricsLoading
+                        }
+                        onClick={loadWorkshopMetrics}
+                    >
+                        <RefreshCw
+                            size={17}
+                            className={metricsLoading ? 'spin' : ''}
+                        />
+
+                        {metricsLoading
+                            ? 'Consultando...'
+                            : 'Ver indicadores'}
+                    </button>
+                </div>
+
+                {metricsError && (
+                    <div className="alert alert-error">
+                        <AlertCircle size={18} />
+                        <span>{metricsError}</span>
+                    </div>
+                )}
+
+                {workshopMetrics && (
+                    <>
+                        <p>
+                            <strong>
+                                {workshopMetrics.workshopName}
+                            </strong>
+                        </p>
+
+                        <section className="inventory-summary">
+                            <div>
+                                <span>Órdenes abiertas</span>
+                                <strong>
+                                    {workshopMetrics.openOrders}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>En ejecución</span>
+                                <strong>
+                                    {workshopMetrics.inProgressOrders}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Órdenes cerradas</span>
+                                <strong>
+                                    {workshopMetrics.closedOrders}
+                                </strong>
+                            </div>
+                        </section>
+
+                        <section className="inventory-summary">
+                            <div>
+                                <span>Presupuestos aprobados</span>
+                                <strong>
+                                    {formatWorkshopAmount(
+                                        workshopMetrics.approvedBudgetTotal
+                                    )}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Costos finales registrados</span>
+                                <strong>
+                                    {formatWorkshopAmount(
+                                        workshopMetrics.finalCostTotal
+                                    )}
+                                </strong>
+                            </div>
+                        </section>
+
+                        <p>
+                            Los importes representan presupuestos y
+                            costos registrados, no pagos realizados.
+                        </p>
+                    </>
+                )}
             </section>
 
             {/* LISTADO DE TALLERES */}
@@ -810,4 +987,22 @@ export default function WorkshopsPage() {
             </section>
         </div>
     );
+}
+
+function formatWorkshopAmount(value) {
+    if (value === null || value === undefined) {
+        return '—';
+    }
+
+    const amount = Number(value);
+
+    if (!Number.isFinite(amount)) {
+        return '—';
+    }
+
+    return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        maximumFractionDigits: 0,
+    }).format(amount);
 }

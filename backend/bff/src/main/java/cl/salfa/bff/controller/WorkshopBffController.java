@@ -28,6 +28,15 @@ public class WorkshopBffController {
         return service.get("/api/workshops/" + id);
     }
 
+    @GetMapping("/api/workshops/{id}/metrics")
+    public ResponseEntity<String> findWorkshopMetrics(
+            @PathVariable Long id
+    ) {
+        return service.get(
+                "/api/workshops/" + id + "/metrics"
+        );
+    }
+
     @PostMapping("/api/workshops")
     public ResponseEntity<String> createWorkshop(
             @RequestBody String body
